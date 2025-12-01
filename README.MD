@@ -21,6 +21,7 @@ API trung tâm tin học Sao Việt
   - [Kiến trúc](#kiến-trúc)
   - [Repository pattern](#repository-pattern)
   - [Môi trường phát triển](#môi-trường-phát-triển)
+- [Lộ trình phát triển](#lộ-trình-phát-triển)
 - [Cài đặt](#cài-đặt)
   - [Cài đặt môi trường phát triển](#cài-đặt-môi-trường-phát-triển)
   - [Cài đặt Log và Monitor](#cài-đặt-log-và-monitor)
@@ -76,6 +77,25 @@ API sử dụng mô hình Repository pattern để truy xuất dữ liệu. Mô 
 - ELK Stack
 - Prometheus
 - Grafana
+
+# Lộ trình phát triển
+
+Xem chi tiết lộ trình từng bước từ 0 đến hoàn thành dự án tại trang [Roadmap](./ROADMAP.md).
+
+Lộ trình bao gồm 12 giai đoạn chính:
+
+1. **Chuẩn bị môi trường phát triển** - Cài đặt .NET SDK, SQL Server, Docker
+2. **Khởi tạo dự án và cấu trúc thư mục** - Tạo Solution theo Clean Architecture
+3. **Xây dựng tầng Domain** - Entities và Interfaces
+4. **Xây dựng tầng Infrastructure** - DbContext và Repositories
+5. **Xây dựng tầng Application** - Business Services và DTOs
+6. **Xây dựng tầng WebAPI** - Controllers và Configuration
+7. **Xác thực và phân quyền** - JWT Authentication và Authorization
+8. **Logging và Monitoring** - Serilog, Elasticsearch, Prometheus, Grafana
+9. **Caching** - Redis Cache
+10. **Testing** - Unit Tests và Integration Tests
+11. **Docker và Container hóa** - Dockerfile và Docker Compose
+12. **Triển khai và vận hành** - Kubernetes và CI/CD
 
 # Cài đặt
 
@@ -173,7 +193,8 @@ dotnet ef database update
 
 # Tài liệu
 
-- Xem Các thay đổi tại trang [Changelog](./CHANGELOG.md)
+- Xem lộ trình phát triển chi tiết tại trang [Roadmap](./ROADMAP.md)
+- Xem các thay đổi tại trang [Changelog](./CHANGELOG.md)
 - Xem tài liệu về cách sử dụng API tại trang [API Documentation](#)
 - Xem quy tắc ứng xử tại trang [Contributor Covenant Code of Conduct](./CODE_OF_CONDUCT.md)
 - Xem đóng góp tại trang [Contributing](./CONTRIBUTING.md)
