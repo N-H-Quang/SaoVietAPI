@@ -196,6 +196,7 @@ dotnet ef database update
 - Xem lộ trình phát triển chi tiết tại trang [Roadmap](./ROADMAP.md)
 - Xem các thay đổi tại trang [Changelog](./CHANGELOG.md)
 - Xem tài liệu về cách sử dụng API tại trang [API Documentation](#)
+- Xem sơ đồ và script tạo Database tại trang [Database Documentation](./Database/DATABASE_DIAGRAM.md)
 - Xem quy tắc ứng xử tại trang [Contributor Covenant Code of Conduct](./CODE_OF_CONDUCT.md)
 - Xem đóng góp tại trang [Contributing](./CONTRIBUTING.md)
 - Xem chính sách bảo mật tại trang [Privacy Policy](./SECURITY.md)
