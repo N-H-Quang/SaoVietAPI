@@ -216,6 +216,9 @@ END
 GO
 
 -- ClassStudents Table (Many-to-Many relationship between Classes and Students)
+-- Note: ON DELETE behaviors are intentionally different to match Entity Framework configuration:
+-- - CASCADE on classId: When a class is deleted, remove all enrollments for that class
+-- - NO ACTION on studentId: Prevent deletion of students who are enrolled in any class (referential integrity)
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ClassStudents' AND xtype='U')
 BEGIN
     CREATE TABLE [dbo].[ClassStudents] (
@@ -271,6 +274,9 @@ END
 GO
 
 -- Attendance Table
+-- Note: ON DELETE behaviors are intentionally different to match Entity Framework configuration:
+-- - CASCADE on lessonId: When a lesson is deleted, remove all attendance records for that lesson
+-- - NO ACTION on classId: Prevent deletion of classes that have attendance records (referential integrity)
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Attendance' AND xtype='U')
 BEGIN
     CREATE TABLE [dbo].[Attendance] (

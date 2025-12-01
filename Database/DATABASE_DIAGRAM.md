@@ -362,19 +362,37 @@ Bảng lưu trữ thông tin điểm danh.
 3. Mở file `Database/SaoVietDB.sql`
 4. Thực thi script
 
+Hoặc sử dụng command line với Windows Authentication (khuyến nghị):
+
 ```bash
-sqlcmd -S your_server -U your_username -P your_password -i Database/SaoVietDB.sql
+sqlcmd -S your_server -E -i Database/SaoVietDB.sql
 ```
+
+> ⚠️ **Lưu ý bảo mật**: Tránh sử dụng tham số `-P` để truyền mật khẩu trực tiếp trên command line vì có thể bị lộ trong history. Sử dụng Windows Authentication (`-E`) hoặc biến môi trường.
 
 ### Cách 2: Sử dụng Entity Framework Migrations
 
 1. Cấu hình connection string trong `appsettings.json`:
 
+**Sử dụng Windows Authentication (khuyến nghị cho môi trường development):**
+
 ```json
 "ConnectionStrings": {
-    "DefaultConnection": "Data Source=your_server;Initial Catalog=SaoVietDB;User ID=your_username;Password=your_password;Integrated Security=True;TrustServerCertificate=True"
+    "DefaultConnection": "Data Source=your_server;Initial Catalog=SaoVietDB;Integrated Security=True;TrustServerCertificate=True"
 }
 ```
+
+**Sử dụng SQL Server Authentication (cho môi trường production):**
+
+```json
+"ConnectionStrings": {
+    "DefaultConnection": "Data Source=your_server;Initial Catalog=SaoVietDB;User ID=your_username;Password=your_password;TrustServerCertificate=False;Encrypt=True"
+}
+```
+
+> ⚠️ **Lưu ý bảo mật**: 
+> - Không sử dụng `TrustServerCertificate=True` trong môi trường production
+> - Sử dụng User Secrets hoặc Environment Variables để lưu trữ connection string trong production
 
 2. Tạo database từ migrations:
 
