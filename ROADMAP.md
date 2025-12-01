@@ -55,10 +55,14 @@ sudo apt-get update && sudo apt-get install -y dotnet-sdk-7.0
 # Sử dụng Docker
 docker pull mcr.microsoft.com/mssql/server:2022-latest
 
+# Lưu ý: Thay thế YourStrong@Password bằng mật khẩu mạnh của bạn
+# Trong môi trường production, sử dụng Docker secrets hoặc biến môi trường
 docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=YourStrong@Password" \
    -p 1433:1433 --name sql_server \
    -d mcr.microsoft.com/mssql/server:2022-latest
 ```
+
+> ⚠️ **Bảo mật:** Không sử dụng mật khẩu mặc định trong môi trường production. Sử dụng Docker secrets hoặc biến môi trường để quản lý mật khẩu.
 
 ### 1.4 Kiểm tra cài đặt
 
@@ -782,6 +786,13 @@ dotnet add package AspNetCore.HealthChecks.UI.Client
 }
 ```
 
+> ⚠️ **Bảo mật quan trọng:**
+> - **Không commit** file `appsettings.json` với thông tin nhạy cảm vào source control
+> - Sử dụng **User Secrets** cho môi trường development: `dotnet user-secrets set "Jwt:Key" "your-secret-key"`
+> - Sử dụng **Environment Variables** hoặc **Azure Key Vault** cho production
+> - JWT Key nên có độ dài tối thiểu 256-bit (32 ký tự) và được tạo ngẫu nhiên
+```
+
 ### 6.3 Cấu hình Program.cs
 
 ```csharp
@@ -1055,10 +1066,26 @@ public class AuthenticationService
     {
         _context = context;
         _configuration = configuration;
+        
+        // Validate required configuration at startup
+        ValidateConfiguration();
+    }
+    
+    private void ValidateConfiguration()
+    {
+        var jwtKey = _configuration["Jwt:Key"];
+        if (string.IsNullOrEmpty(jwtKey))
+            throw new InvalidOperationException("JWT Key is not configured");
+            
+        if (jwtKey.Length < 32)
+            throw new InvalidOperationException("JWT Key must be at least 32 characters");
     }
 
     public string GenerateJwtToken(ApplicationUser user, IList<string> roles)
     {
+        var jwtKey = _configuration["Jwt:Key"] 
+            ?? throw new InvalidOperationException("JWT Key is not configured");
+            
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id),
@@ -1074,8 +1101,7 @@ public class AuthenticationService
             claims.Add(new Claim(role, "true")); // For policy-based authorization
         }
 
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
@@ -1083,7 +1109,7 @@ public class AuthenticationService
             audience: _configuration["Jwt:Audience"],
             claims: claims,
             expires: DateTime.UtcNow.AddMinutes(
-                Convert.ToDouble(_configuration["Jwt:ExpiryInMinutes"])),
+                Convert.ToDouble(_configuration["Jwt:ExpiryInMinutes"] ?? "60")),
             signingCredentials: credentials
         );
 
@@ -1092,15 +1118,22 @@ public class AuthenticationService
 
     public RefreshToken GenerateRefreshToken()
     {
+        // Sử dụng cryptographically secure random number generator
+        var randomBytes = new byte[64];
+        using var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
+        rng.GetBytes(randomBytes);
+        
         return new RefreshToken
         {
-            Token = Guid.NewGuid().ToString(),
+            Token = Convert.ToBase64String(randomBytes),
             ExpiryDate = DateTime.UtcNow.AddDays(7),
             Created = DateTime.UtcNow
         };
     }
 }
 ```
+
+> 💡 **Lưu ý bảo mật:** Sử dụng `RandomNumberGenerator` thay vì `Guid.NewGuid()` để tạo refresh token vì nó cung cấp entropy cao hơn và an toàn hơn về mặt mật mã học.
 
 ### 7.2 Tạo Authentication Controller
 
@@ -1896,6 +1929,6 @@ jobs:
 
 ---
 
-*Cập nhật lần cuối: 2023*
+*Cập nhật lần cuối: Tháng 12/2024*
 
 *Tác giả: Team SaoViet*
