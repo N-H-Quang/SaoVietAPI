@@ -61,6 +61,11 @@ namespace Infrastructure.Repositories
             _transaction = _context.Database.BeginTransaction();
         }
 
+        public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
+        {
+            _transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        }
+
         public void Commit()
         {
             try
@@ -80,10 +85,41 @@ namespace Infrastructure.Repositories
             }
         }
 
+        public async Task CommitAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await _context.SaveChangesAsync(cancellationToken);
+                if (_transaction != null)
+                    await _transaction.CommitAsync(cancellationToken);
+            }
+            catch
+            {
+                await RollbackAsync(cancellationToken);
+                throw;
+            }
+            finally
+            {
+                if (_transaction != null)
+                    await _transaction.DisposeAsync();
+                _transaction = null;
+            }
+        }
+
         public void Rollback()
         {
             _transaction?.Rollback();
             _transaction?.Dispose();
+            _transaction = null;
+        }
+
+        public async Task RollbackAsync(CancellationToken cancellationToken = default)
+        {
+            if (_transaction != null)
+            {
+                await _transaction.RollbackAsync(cancellationToken);
+                await _transaction.DisposeAsync();
+            }
             _transaction = null;
         }
 

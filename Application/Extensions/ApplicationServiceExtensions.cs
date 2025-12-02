@@ -20,7 +20,6 @@ namespace Application.Extensions
         {
             // Add Services with interfaces
             services.AddTransient<ITeacherService, TeacherService>();
-            services.AddTransient<TeacherService>();
             services.AddTransient<ClassService>();
             services.AddTransient<BranchService>();
             services.AddTransient<StudentService>();
