@@ -1,3 +1,4 @@
+using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using Infrastructure;
@@ -14,7 +15,7 @@ namespace Application.Services
     * @Create date Mon 23 Jan 2023 00:00:00 AM +07
     */
 
-    public class TeacherService
+    public class TeacherService : ITeacherService
     {
         private readonly ApplicationDbContext _context;
         private readonly ITeacherRepository _teacherRepository;
